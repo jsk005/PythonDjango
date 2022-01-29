@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}로그인{% endblock %}
+{% block contents %}
+<div class="login-form pt-5">
+    <form method="post" id="post-form">
+        {% csrf_token %}
+        <h2 class="text-center">로그인</h2>
+        <div class="form-group">
+            <input type="text" id="useremail" class="form-control" placeholder="user email 입력" required="required">
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" class="form-control" placeholder="비밀번호 입력" required="required">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block">로그인</button>
+        </div>
+    </form>
+    <p class="text-center"><a href="{% url 'accounts:ajax_register' %}" id="register">회원 가입</a></p>
+</div>
+<script>
+$(document).on('submit', '#post-form', function (e) {
+    e.preventDefault();
+
+    $.ajax({
+        type: 'POST',
+        url: '{% url "accounts:ajax_login" %}',
+        data: {
+            useremail: $('#useremail').val(),
+            password: $('#password').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+        },
+        success: function (json) {
+            if(json.data == 1){
+                document.getElementById("post-form").reset();
+                alert(json.message);
+                window.location.href = '/';
+                {#window.location.href = {% url 'index' %};#}
+            } else if(json.data == 0){
+                alert(json.message);
+            }
+        },
+        error: function (xhr, errmsg, err) {
+            alert('에러가 발생했습니다.');
+            console.log(xhr.status + ": " + xhr.responseText); 
+        }
+    });
+});
+</script>
+{% endblock %}
