@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <form method="POST" id="post-form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="form-group">
+            <label for="id_repasswd">비밀번호 확인</label>
+            <input type="password" name="repasswd" class="form-control" style="max-width: 300px;" maxlength="128" required="" id="id_repasswd">
+        </div>
+        <button type="submit" class="btn btn-primary">가입</button>
+        <a href="{% url 'home' %}">
+            <button type="button" class="btn btn-warning">취소</button>
+        </a>
+    </form>
+    <script type="text/javascript" src="{% static 'js/user/passwd_checker.js' %}"></script>
+    <script>
+        $(document).on('submit', '#post-form', function (e) {
+            e.preventDefault();
+            const pwd = $("input[name=password]");
+            const repwd = $("input[name=repasswd]");
+            if (PasswordChk(pwd, repwd) == false) return false;
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'signup' %}',
+                data: {
+                    username: $("input[name=username]").val(),
+                    email: $("input[name=email]").val(),
+                    password: $("input[name=password]").val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function (json) {
+                    if (json.data == 1) {
+                        window.location.href = '/';
+                        alert(json.message);
+                    } else if (json.data == 0) {
+                        alert(json.message);
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    alert('에러가 발생했네요.');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    </script>
+{% endblock content %}
