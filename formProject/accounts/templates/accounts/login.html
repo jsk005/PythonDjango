@@ -11,4 +11,33 @@
             <button type="button" class="btn btn-warning">취소</button>
         </a>
     </form>
+
+    <script>
+        $(document).on('submit', '#post-form', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'login' %}',
+                data: {
+                    username: $("input[name=username]").val(),
+                    password: $("input[name=password]").val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function (json) {
+                    console.log(json);
+                    if (json.data == 1) {
+                        window.location.href = '/';
+                        alert(json.message);
+                    } else if (json.data == 0) {
+                        alert(json.message);
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    alert('에러가 발생했습니다.');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    </script>
 {% endblock content %}

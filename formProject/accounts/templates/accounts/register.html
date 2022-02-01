@@ -6,10 +6,6 @@
     <form method="POST" id="post-form">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <div class="form-group">
-            <label for="id_repasswd">비밀번호 확인</label>
-            <input type="password" name="repasswd" class="form-control" style="max-width: 300px;" maxlength="128" required="" id="id_repasswd">
-        </div>
         <button type="submit" class="btn btn-primary">가입</button>
         <a href="{% url 'home' %}">
             <button type="button" class="btn btn-warning">취소</button>
@@ -19,8 +15,8 @@
     <script>
         $(document).on('submit', '#post-form', function (e) {
             e.preventDefault();
-            const pwd = $("input[name=password]");
-            const repwd = $("input[name=repasswd]");
+            const pwd = $("input[name=password1]");
+            const repwd = $("input[name=password2]");
             if (PasswordChk(pwd, repwd) == false) return false;
             $.ajax({
                 type: 'POST',
@@ -28,7 +24,8 @@
                 data: {
                     username: $("input[name=username]").val(),
                     email: $("input[name=email]").val(),
-                    password: $("input[name=password]").val(),
+                    password1: $("input[name=password1]").val(),
+                    password2: $("input[name=password2]").val(),
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     action: 'post'
                 },
@@ -41,7 +38,7 @@
                     }
                 },
                 error: function (xhr, errmsg, err) {
-                    alert('에러가 발생했네요.');
+                    alert('에러가 발생했습니다.');
                     console.log(xhr.status + ": " + xhr.responseText);
                 }
             });

@@ -7,9 +7,9 @@
 
     <div>Django default Form-based Home!</div>
     {% if request.user.is_authenticated %}
-    <div>{{ user.username }}</div>
-    <div>{{ user.email }}</div>
-    <div>{{ user }}</div>
+        <div>{{ user.username }}</div>
+        <div>{{ user.email }}</div>
+        <div>{{ user }}</div>
     {% endif %}
 
 {% endblock %}
