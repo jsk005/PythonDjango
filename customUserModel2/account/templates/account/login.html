@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load bootstrap4 %}
+{% block title %}로그인{% endblock %}
 
 {% block content %}
-    <form method="POST" id="post-form">
+    <form method="post" id="post-form" class="border border-light p-5">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <button type="submit" class="btn btn-primary">로그인</button>
-        <a href="{% url 'home' %}">
-            <button type="button" class="btn btn-warning">취소</button>
-        </a>
+        {% buttons %}
+            <button class="btn btn-info btn-block my-4" type="submit">로그인</button>
+        {% endbuttons %}
     </form>
+
+    <div class="d-flex flex-column my-4">
+        {#	<a class="m-auto" href="{% url 'password_reset' %}">Reset password</a>#}
+    </div>
+
     <script type="text/javascript" src="{% static 'js/jsencrypt.min.js' %}"></script>
     <script>
         $(document).on('submit', '#post-form', function (e) {
@@ -31,7 +36,7 @@
                     action: 'post'
                 },
                 success: function (json) {
-                    console.log(json);
+                    {#console.log(json);#}
                     if (json.data == 1) {
                         window.location.href = '/';
                         alert(json.message);
@@ -46,4 +51,5 @@
             });
         });
     </script>
+
 {% endblock content %}

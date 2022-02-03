@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from .forms import SignUpForm, LoginForm
+from .RSACipher import *
 
 
 @csrf_exempt
@@ -46,8 +47,10 @@ def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
+            # 유효성 검사, 내부적으로 form.clean()을 실행한다.
             username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
+            enc_password = form.cleaned_data.get("password")
+            password = RSACipher().decrypt(enc_password)
 
             try:
                 user = User.objects.get(username=username)
