@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+    <div>Django default Form-based Home!</div>
+    {% if request.user.is_authenticated %}
+        <div>{{ user.username }}</div>
+        <div>{{ user.email }}</div>
+        <div>{{ user }}</div>
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <form method="POST" id="post-form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">가입</button>
+        <a href="{% url 'home' %}">
+            <button type="button" class="btn btn-warning">취소</button>
+        </a>
+    </form>
+    <script type="text/javascript" src="{% static 'js/user/passwd_checker.js' %}"></script>
+    <script>
+        $(document).on('submit', '#post-form', function (e) {
+            e.preventDefault();
+            const pwd = $("input[name=password1]");
+            const repwd = $("input[name=password2]");
+            if (PasswordChk(pwd, repwd) == false) return false;
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'signup' %}',
+                data: {
+                    username: $("input[name=username]").val(),
+                    email: $("input[name=email]").val(),
+                    name: $("input[name=name]").val(),
+                    password1: $("input[name=password1]").val(),
+                    password2: $("input[name=password2]").val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function (json) {
+                    if (json.data == 1) {
+                        window.location.href = '/';
+                        alert(json.message);
+                    } else if (json.data == 0) {
+                        alert(json.message);
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    alert('에러가 발생했습니다.');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    </script>
+{% endblock content %}

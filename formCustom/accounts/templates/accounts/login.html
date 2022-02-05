@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <form method="POST" id="post-form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">로그인</button>
+        <a href="{% url 'home' %}">
+            <button type="button" class="btn btn-warning">취소</button>
+        </a>
+    </form>
+    <script type="text/javascript" src="{% static 'js/jsencrypt.min.js' %}"></script>
+    <script>
+        $(document).on('submit', '#post-form', function (e) {
+            e.preventDefault();
+            var plainpw = $("input[name=password]").val();
+            var pubkey = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6dMMXd/qmF6Sn7gebxdu5JAxD\nEyk7VdZdU4gFKEi/r+wzGav16C3SjvT6X8YNSHwmMmhtJ1QNWnsvjo9ozHXSa6tb\nisBn/CSfhjSxbKf5NfwFqebO89N5kHsU6577+QiO+9U+RjZ4aEk5UladP0WhFNf6\nnQCXXXE+2RRSAvhOsQIDAQAB\n-----END PUBLIC KEY-----";
+            var crypt = new JSEncrypt();
+            crypt.setPrivateKey(pubkey);
+            var password = crypt.encrypt(plainpw);
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'login' %}',
+                datatype:'json',
+                data: {
+                    username: $("input[name=username]").val(),
+                    password: password,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'post'
+                },
+                success: function (json) {
+                    console.log(json);
+                    if (json.data == 1) {
+                        if(json.nexturl == 'None' || json.nexturl == null){
+                            window.location.href = '/';
+                        } else {
+                            window.location.href = json.nexturl;
+                        }
+                        alert(json.message);
+                    } else if (json.data == 0) {
+                        alert(json.message);
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    alert('에러가 발생했습니다.');
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    </script>
+{% endblock content %}
